@@ -148,5 +148,12 @@ Pull requests welcome. For major changes, please open an issue first.
 
 ## Documentation
 
-- [Multiplayer Guide](MULTIPLAYER.md) - Detailed multiplayer setup and usage
+### Comprehensive Guides
+- **[Setup Guide](SETUP_GUIDE.md)** - Detailed step-by-step installation and configuration
+- **[Usage Guide](USAGE_GUIDE.md)** - Day-to-day operations, API examples, and best practices
+- **[Multiplayer Technical Reference](MULTIPLAYER.md)** - Complete API documentation and features overview
+
+### Additional Resources
 - API collection files included for Postman/Insomnia
+- Interactive demo script: `demo_multiplayer.py`
+- Web interface: `web_interface.html`
