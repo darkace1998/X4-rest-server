@@ -1,25 +1,50 @@
 {
-    "configVersion": "1.0.0",
+    "configVersion": "2.0.0",
     "server": {
         "enableDedicatedServer": false,
         "serverPort": 3003,
+        "wsPort": 3004,
         "maxPlayers": 10,
         "serverName": "X4 Multiplayer Coordination Server",
         "enableChat": true,
         "enableEconomySync": true,
         "enablePlayerTracking": true,
-        "heartbeatTimeout": 300
+        "heartbeatTimeout": 300,
+        "enableAuthentication": true,
+        "allowGuestAccess": false,
+        "tokenExpirationMinutes": 60,
+        "enableTLS": false,
+        "tlsCertFile": "server.crt",
+        "tlsKeyFile": "server.key",
+        "enableEventNotifications": true,
+        "eventQueueMaxSize": 1000,
+        "enableDetailedEconomySync": true,
+        "economySyncIntervalSeconds": 300,
+        "enableAdminInterface": true,
+        "adminInterfacePath": "/admin"
     },
     "client": {
         "enableMultiplayer": false,
         "serverHost": "localhost",
         "serverPort": 3003,
+        "wsPort": 3004,
         "playerName": "",
         "autoConnect": false,
         "heartbeatInterval": 30,
         "syncInterval": 60,
         "enableChat": true,
         "enableEconomySync": true,
-        "enablePlayerTracking": true
+        "enablePlayerTracking": true,
+        "useAuthentication": true,
+        "username": "",
+        "password": "",
+        "rememberCredentials": false,
+        "requireTLS": false,
+        "validateServerCert": true,
+        "enableEventNotifications": true,
+        "autoReconnectWebSocket": true,
+        "enableDetailedEconomySync": true,
+        "shareStationData": true,
+        "shareTradePrices": true
     }
 }
