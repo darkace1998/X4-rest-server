@@ -14,13 +14,15 @@ A comprehensive REST API server for X4 Foundations with multiplayer coordination
 - Lua script execution
 - Logbook and message access
 
-### Multiplayer Coordination (NEW)
-- **Dedicated Server Mode**: Run a coordination server for multiple X4 instances
-- **Client Mode**: Connect to coordination servers to share player data
-- **Player Tracking**: See other players' locations and information
-- **Chat System**: Communicate with other players
-- **Economy Sync**: Share economic data between players
-- **Session Management**: Player join/leave with heartbeat monitoring
+### Enhanced Multiplayer Coordination (FULL FEATURES)
+- **🔐 Player Authentication**: Secure token-based user authentication system
+- **🔒 Encrypted Communication**: HTTPS/TLS support for secure data transmission  
+- **📊 Detailed Economy Sync**: Comprehensive station, trade, and market data sharing
+- **📡 Event Notifications**: Real-time WebSocket communication for instant updates
+- **🌐 Web Admin Interface**: Professional dashboard for server management
+- **👥 Advanced Player Tracking**: Enhanced player location and status monitoring
+- **💬 Enhanced Chat System**: Secure messaging with authentication
+- **⚙️ Flexible Configuration**: Comprehensive settings for all features
 
 ## Quick Start
 
@@ -29,35 +31,48 @@ A comprehensive REST API server for X4 Foundations with multiplayer coordination
 2. Start X4 Foundations
 3. Access the REST API at `http://localhost:3002`
 
-### For Multiplayer Coordination
+### For Enhanced Multiplayer Coordination
 
-#### Running a Dedicated Server
+#### Running a Dedicated Server with Full Features
 1. Create/edit `multiplayer_config.json`:
 ```json
 {
+    "configVersion": "2.0.0",
     "server": {
         "enableDedicatedServer": true,
         "serverPort": 3003,
-        "serverName": "My X4 Server"
+        "wsPort": 3004,
+        "serverName": "My Enhanced X4 Server",
+        "enableAuthentication": true,
+        "enableTLS": false,
+        "enableEventNotifications": true,
+        "enableDetailedEconomySync": true,
+        "enableAdminInterface": true
     }
 }
 ```
-2. Start X4 with the mod
+2. Start X4 with the enhanced mod
 3. Coordination server runs on port 3003
+4. WebSocket events on port 3004
+5. Admin interface at `http://localhost:3002/admin/dashboard`
 
-#### Connecting as Client
-1. Configure `multiplayer_config.json`:
+#### Connecting as Authenticated Client
+1. Register user account: `POST /auth/register`
+2. Login to get token: `POST /auth/login`
+3. Configure client with authentication:
 ```json
 {
     "client": {
         "enableMultiplayer": true,
         "serverHost": "server-ip-address",
         "serverPort": 3003,
-        "playerName": "YourName"
+        "useAuthentication": true,
+        "username": "your_username",
+        "enableEventNotifications": true,
+        "enableDetailedEconomySync": true
     }
 }
 ```
-2. Use API endpoint to connect: `POST /mp/client/connect`
 
 ## API Documentation
 
@@ -69,14 +84,19 @@ A comprehensive REST API server for X4 Foundations with multiplayer coordination
 - `POST /Unpause` - Unpause the game
 - And many more...
 
-### New Multiplayer Endpoints
-- `GET /mp/client/status` - Client connection status
-- `POST /mp/client/connect` - Connect to multiplayer server
-- `GET /mp/sync/players` - Get active players list
-- `POST /mp/chat/send` - Send chat message
-- `GET /mp/chat/messages` - Get chat history
-- `GET /mp/player/info` - Enhanced player information
-- See [MULTIPLAYER.md](MULTIPLAYER.md) for complete documentation
+### Enhanced Multiplayer Endpoints
+- `POST /auth/register` - Register new user account
+- `POST /auth/login` - Login and receive authentication token
+- `POST /auth/logout` - Logout and invalidate token  
+- `GET /auth/validate` - Validate authentication token
+- `GET /mp/economy/detailed` - Get comprehensive economy data
+- `POST /mp/economy/upload` - Upload detailed economy data
+- `POST /mp/events/broadcast` - Broadcast event to all players
+- `GET /mp/events/recent` - Get recent event notifications
+- `GET /admin/dashboard` - Web-based admin interface
+- `GET /admin/stats` - Server statistics (requires authentication)
+- **WebSocket**: `ws://localhost:3004` - Real-time event notifications
+- See [MULTIPLAYER.md](MULTIPLAYER.md) for complete enhanced documentation
 
 ## Installation
 
@@ -102,12 +122,21 @@ Dependencies (included):
 ### Multiplayer Configuration
 See the included `multiplayer_config.json` example file.
 
+## Enhanced Features
+
+✅ **Player Authentication System** - Secure token-based authentication with user management
+✅ **Encrypted Communication** - HTTPS/TLS support for secure data transmission
+✅ **Detailed Economy Synchronization** - Comprehensive market and trade data sharing
+✅ **Event Notifications** - Real-time WebSocket communication for instant updates
+✅ **Web-based Admin Interface** - Professional dashboard for server management and monitoring
+
 ## Limitations
 
-- Windows only
+- Windows only (DLL-based mod)
 - X4 Foundations specific
-- Multiplayer is coordination-only (not true multiplayer gameplay)
-- No authentication system (use on trusted networks only)
+- Coordination-only multiplayer (not true multiplayer gameplay)
+- Requires all players to have the enhanced mod installed
+- Network latency may affect real-time synchronization
 
 ## License
 
@@ -119,5 +148,12 @@ Pull requests welcome. For major changes, please open an issue first.
 
 ## Documentation
 
-- [Multiplayer Guide](MULTIPLAYER.md) - Detailed multiplayer setup and usage
+### Comprehensive Guides
+- **[Setup Guide](SETUP_GUIDE.md)** - Detailed step-by-step installation and configuration
+- **[Usage Guide](USAGE_GUIDE.md)** - Day-to-day operations, API examples, and best practices
+- **[Multiplayer Technical Reference](MULTIPLAYER.md)** - Complete API documentation and features overview
+
+### Additional Resources
 - API collection files included for Postman/Insomnia
+- Interactive demo script: `demo_multiplayer.py`
+- Web interface: `web_interface.html`

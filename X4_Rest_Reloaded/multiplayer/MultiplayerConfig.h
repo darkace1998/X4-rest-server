@@ -14,18 +14,42 @@ public:
     struct ServerConfig {
         bool enableDedicatedServer = false;
         int serverPort = 3003;
+        int wsPort = 3004; // WebSocket port for real-time events
         int maxPlayers = 10;
         std::string serverName = "X4 Multiplayer Server";
         bool enableChat = true;
         bool enableEconomySync = true;
         bool enablePlayerTracking = true;
         int heartbeatTimeout = 300; // seconds
+        
+        // Authentication settings
+        bool enableAuthentication = true;
+        bool allowGuestAccess = false;
+        int tokenExpirationMinutes = 60;
+        
+        // Security settings
+        bool enableTLS = false;
+        std::string tlsCertFile = "server.crt";
+        std::string tlsKeyFile = "server.key";
+        
+        // Event notification settings
+        bool enableEventNotifications = true;
+        int eventQueueMaxSize = 1000;
+        
+        // Enhanced economy settings
+        bool enableDetailedEconomySync = true;
+        int economySyncIntervalSeconds = 300;
+        
+        // Admin interface settings
+        bool enableAdminInterface = true;
+        std::string adminInterfacePath = "/admin";
     };
 
     struct ClientConfig {
         bool enableMultiplayer = false;
         std::string serverHost = "localhost";
         int serverPort = 3003;
+        int wsPort = 3004; // WebSocket port for real-time events
         std::string playerName = "";
         bool autoConnect = false;
         int heartbeatInterval = 30; // seconds
@@ -33,6 +57,25 @@ public:
         bool enableChat = true;
         bool enableEconomySync = true;
         bool enablePlayerTracking = true;
+        
+        // Authentication settings
+        bool useAuthentication = true;
+        std::string username = "";
+        std::string password = "";
+        bool rememberCredentials = false;
+        
+        // Security settings
+        bool requireTLS = false;
+        bool validateServerCert = true;
+        
+        // Event notification settings
+        bool enableEventNotifications = true;
+        bool autoReconnectWebSocket = true;
+        
+        // Enhanced economy settings
+        bool enableDetailedEconomySync = true;
+        bool shareStationData = true;
+        bool shareTradePrices = true;
     };
 
     struct Config {

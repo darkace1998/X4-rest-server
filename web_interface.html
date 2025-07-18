@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X4 Multiplayer Client Interface</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff; 
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-bottom: 10px;
+        }
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+        .status-dot.connected {
+            background: #44ff44;
+            box-shadow: 0 0 10px rgba(68, 255, 68, 0.5);
+        }
+        .card { 
+            background: rgba(255,255,255,0.1); 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 15px; 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+        }
+        .btn-success {
+            background: linear-gradient(45deg, #44ff44, #00cc00);
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            box-sizing: border-box;
+        }
+        .input-group input::placeholder {
+            color: #aaa;
+        }
+        .log {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .log-entry.error {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+        .log-entry.success {
+            border-left-color: #44ff44;
+            background: rgba(68, 255, 68, 0.1);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background: rgba(0, 212, 255, 0.3);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .player-list {
+            list-style: none;
+            padding: 0;
+        }
+        .player-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .economy-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .economy-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .economy-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            min-width: 400px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 212, 255, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .stat-label {
+            color: #ccc;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 X4 Enhanced Multiplayer Client</h1>
+            <p>Advanced coordination interface for X4 Foundations</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="server-status"></div>
+                <span>Server Connection</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="auth-status"></div>
+                <span id="auth-text">Not Authenticated</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="ws-status"></div>
+                <span>WebSocket Events</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('auth')">Authentication</button>
+            <button class="tab" onclick="showTab('players')">Players</button>
+            <button class="tab" onclick="showTab('economy')">Economy</button>
+            <button class="tab" onclick="showTab('events')">Events</button>
+            <button class="tab" onclick="showTab('logs')">Activity Log</button>
+        </div>
+
+        <!-- Authentication Tab -->
+        <div id="auth-tab" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h3>🔐 User Authentication</h3>
+                    <div id="auth-form">
+                        <div class="input-group">
+                            <label>Username:</label>
+                            <input type="text" id="username" placeholder="Enter username">
+                        </div>
+                        <div class="input-group">
+                            <label>Password:</label>
+                            <input type="password" id="password" placeholder="Enter password">
+                        </div>
+                        <div class="input-group">
+                            <label>Email (for registration):</label>
+                            <input type="email" id="email" placeholder="Enter email (optional)">
+                        </div>
+                        <button class="btn" onclick="register()">Register</button>
+                        <button class="btn btn-success" onclick="login()">Login</button>
+                        <button class="btn btn-danger" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Server Configuration</h3>
+                    <div class="input-group">
+                        <label>Server Host:</label>
+                        <input type="text" id="server-host" value="localhost" placeholder="Server IP/hostname">
+                    </div>
+                    <div class="input-group">
+                        <label>Server Port:</label>
+                        <input type="number" id="server-port" value="3002" placeholder="3002">
+                    </div>
+                    <button class="btn" onclick="updateServerConfig()">Update Configuration</button>
+                    <button class="btn btn-success" onclick="testConnection()">Test Connection</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Tab -->
+        <div id="players-tab" class="tab-content">
+            <div class="card">
+                <h3>👥 Active Players</h3>
+                <button class="btn" onclick="refreshPlayers()">Refresh Player List</button>
+                <ul class="player-list" id="player-list">
+                    <li class="player-item">Loading player data...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Economy Tab -->
+        <div id="economy-tab" class="tab-content">
+            <div class="card">
+                <h3>📊 Economy Overview</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number" id="stations-count">-</div>
+                        <div class="stat-label">Total Stations</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="trade-routes">-</div>
+                        <div class="stat-label">Trade Routes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="avg-price">-</div>
+                        <div class="stat-label">Avg. Price Index</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="last-update">-</div>
+                        <div class="stat-label">Last Update</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="uploadEconomyData()">Upload My Economy Data</button>
+                <button class="btn" onclick="refreshEconomyData()">Refresh Economy Overview</button>
+            </div>
+        </div>
+
+        <!-- Events Tab -->
+        <div id="events-tab" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>📡 Broadcast Event</h3>
+                    <div class="input-group">
+                        <label>Event Type:</label>
+                        <select id="event-type">
+                            <option value="trade_offer">Trade Offer</option>
+                            <option value="player_message">Player Message</option>
+                            <option value="fleet_movement">Fleet Movement</option>
+                            <option value="station_built">Station Built</option>
+                            <option value="custom">Custom Event</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Message:</label>
+                        <input type="text" id="event-message" placeholder="Enter event message">
+                    </div>
+                    <button class="btn btn-success" onclick="broadcastEvent()">Broadcast Event</button>
+                </div>
+                <div class="card">
+                    <h3>📨 Recent Events</h3>
+                    <button class="btn" onclick="refreshEvents()">Refresh Events</button>
+                    <div id="events-list" class="log">
+                        <div class="log-entry">Waiting for events...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Tab -->
+        <div id="logs-tab" class="tab-content">
+            <div class="card">
+                <h3>📋 Activity Log</h3>
+                <button class="btn" onclick="clearLog()">Clear Log</button>
+                <div id="activity-log" class="log">
+                    <div class="log-entry">X4 Enhanced Multiplayer Client initialized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        let serverConfig = {
+            host: 'localhost',
+            port: 3002
+        };
+        let authToken = null;
+        let websocket = null;
+        let username = null;
+
+        // Utility functions
+        function getBaseUrl() {
+            return `http://${serverConfig.host}:${serverConfig.port}`;
+        }
+
+        function getAuthHeaders() {
+            return authToken ? {'Authorization': `Bearer ${authToken}`} : {};
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function logActivity(message, type = 'info') {
+            const log = document.getElementById('activity-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong> - ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateStatus(element, connected) {
+            const statusDot = document.getElementById(element);
+            if (connected) {
+                statusDot.classList.add('connected');
+            } else {
+                statusDot.classList.remove('connected');
+            }
+        }
+
+        // Authentication functions
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            if (!username || !password) {
+                showNotification('Please enter username and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/auth/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password, email})
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    logActivity(`User '${username}' registered successfully`, 'success');
+                    showNotification('Registration successful!', 'success');
+                } else {
+                    logActivity(`Registration failed: ${result.error}`, 'error');
+                    showNotification(`Registration failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logActivity(`Registration error: ${error}`, 'error');
+                showNotification('Registration error', 'error');
+            }
+        }
+
+        async function login() {
+            const usernameValue = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!usernameValue || !password) {
+                showNotification('Please enter username and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: usernameValue, password})
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    authToken = result.token;
+                    username = usernameValue;
+                    updateStatus('auth-status', true);
+                    document.getElementById('auth-text').textContent = `Authenticated: ${username}`;
+                    logActivity(`Logged in as '${username}'`, 'success');
+                    showNotification('Login successful!', 'success');
+                    connectWebSocket();
+                } else {
+                    logActivity(`Login failed: ${result.error}`, 'error');
+                    showNotification(`Login failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logActivity(`Login error: ${error}`, 'error');
+                showNotification('Login error', 'error');
+            }
+        }
+
+        async function logout() {
+            if (!authToken) {
+                showNotification('Not logged in', 'error');
+                return;
+            }
+
+            try {
+                await fetch(`${getBaseUrl()}/auth/logout`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                authToken = null;
+                username = null;
+                updateStatus('auth-status', false);
+                document.getElementById('auth-text').textContent = 'Not Authenticated';
+                logActivity('Logged out successfully', 'success');
+                showNotification('Logged out successfully', 'success');
+                
+                if (websocket) {
+                    websocket.close();
+                }
+            } catch (error) {
+                logActivity(`Logout error: ${error}`, 'error');
+            }
+        }
+
+        // Server configuration
+        function updateServerConfig() {
+            serverConfig.host = document.getElementById('server-host').value;
+            serverConfig.port = parseInt(document.getElementById('server-port').value);
+            logActivity(`Server configuration updated: ${serverConfig.host}:${serverConfig.port}`, 'success');
+            showNotification('Server configuration updated', 'success');
+        }
+
+        async function testConnection() {
+            try {
+                const response = await fetch(`${getBaseUrl()}/`, {timeout: 5000});
+                if (response.ok) {
+                    updateStatus('server-status', true);
+                    logActivity('Server connection test successful', 'success');
+                    showNotification('Server connected!', 'success');
+                } else {
+                    updateStatus('server-status', false);
+                    logActivity('Server connection test failed', 'error');
+                    showNotification('Server connection failed', 'error');
+                }
+            } catch (error) {
+                updateStatus('server-status', false);
+                logActivity(`Server connection error: ${error}`, 'error');
+                showNotification('Server connection error', 'error');
+            }
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            if (!authToken) {
+                logActivity('Authentication required for WebSocket connection', 'error');
+                return;
+            }
+
+            const wsUrl = `ws://${serverConfig.host}:3004`;
+            websocket = new WebSocket(wsUrl);
+
+            websocket.onopen = function() {
+                logActivity('WebSocket connected, authenticating...', 'success');
+                websocket.send(JSON.stringify({
+                    type: 'auth',
+                    token: authToken
+                }));
+            };
+
+            websocket.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    logActivity(`WebSocket message error: ${error}`, 'error');
+                }
+            };
+
+            websocket.onclose = function() {
+                updateStatus('ws-status', false);
+                logActivity('WebSocket connection closed', 'error');
+            };
+
+            websocket.onerror = function(error) {
+                updateStatus('ws-status', false);
+                logActivity(`WebSocket error: ${error}`, 'error');
+            };
+        }
+
+        function handleWebSocketMessage(data) {
+            const messageType = data.type;
+
+            if (messageType === 'auth_response') {
+                if (data.success) {
+                    updateStatus('ws-status', true);
+                    logActivity(`WebSocket authenticated as ${data.username}`, 'success');
+                } else {
+                    updateStatus('ws-status', false);
+                    logActivity(`WebSocket authentication failed: ${data.error}`, 'error');
+                }
+            } else if (messageType === 'event') {
+                const eventType = data.eventType;
+                const fromPlayer = data.fromPlayer || 'Unknown';
+                const eventData = data.data || {};
+                
+                logActivity(`Event received: ${eventType} from ${fromPlayer}`, 'info');
+                showNotification(`${eventType}: ${eventData.message || 'Event received'}`, 'info');
+                
+                // Update events list
+                refreshEvents();
+            }
+        }
+
+        // Player management
+        async function refreshPlayers() {
+            try {
+                const response = await fetch(`${getBaseUrl()}/mp/sync/players`);
+                const data = await response.json();
+                
+                const playerList = document.getElementById('player-list');
+                if (data.players && data.players.length > 0) {
+                    playerList.innerHTML = data.players.map(player => `
+                        <li class="player-item">
+                            <div>
+                                <strong>${player.playerName || 'Unknown'}</strong><br>
+                                <small>Sector: ${player.currentSector || 'Unknown'} | Credits: ${player.credits || 'Unknown'}</small>
+                            </div>
+                            <div>
+                                <button class="btn" onclick="messagePlayer('${player.playerId}')">Message</button>
+                            </div>
+                        </li>
+                    `).join('');
+                } else {
+                    playerList.innerHTML = '<li class="player-item">No active players</li>';
+                }
+            } catch (error) {
+                logActivity(`Error refreshing players: ${error}`, 'error');
+            }
+        }
+
+        // Economy functions
+        async function uploadEconomyData() {
+            if (!authToken) {
+                showNotification('Authentication required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/mp/economy/upload`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    logActivity('Economy data uploaded successfully', 'success');
+                    showNotification('Economy data uploaded!', 'success');
+                    refreshEconomyData();
+                } else {
+                    logActivity(`Economy upload failed: ${result.error}`, 'error');
+                    showNotification('Economy upload failed', 'error');
+                }
+            } catch (error) {
+                logActivity(`Economy upload error: ${error}`, 'error');
+                showNotification('Economy upload error', 'error');
+            }
+        }
+
+        async function refreshEconomyData() {
+            try {
+                const response = await fetch(`${getBaseUrl()}/mp/economy/detailed`);
+                const data = await response.json();
+                
+                // Update economy stats
+                const stationsCount = Object.keys(data.stations || {}).length;
+                const lastUpdate = data.last_update ? new Date(data.last_update * 1000).toLocaleTimeString() : 'Never';
+                
+                document.getElementById('stations-count').textContent = stationsCount;
+                document.getElementById('trade-routes').textContent = Object.keys(data.prices || {}).length;
+                document.getElementById('avg-price').textContent = '1.2k'; // Placeholder
+                document.getElementById('last-update').textContent = lastUpdate;
+                
+                logActivity('Economy data refreshed', 'success');
+            } catch (error) {
+                logActivity(`Error refreshing economy: ${error}`, 'error');
+            }
+        }
+
+        // Event functions
+        async function broadcastEvent() {
+            if (!authToken) {
+                showNotification('Authentication required', 'error');
+                return;
+            }
+
+            const eventType = document.getElementById('event-type').value;
+            const message = document.getElementById('event-message').value;
+
+            if (!message) {
+                showNotification('Please enter a message', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/mp/events/broadcast`, {
+                    method: 'POST',
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        eventType,
+                        data: {message, from: username}
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    logActivity(`Event broadcasted: ${eventType}`, 'success');
+                    showNotification('Event broadcasted!', 'success');
+                    document.getElementById('event-message').value = '';
+                } else {
+                    logActivity(`Event broadcast failed: ${result.error}`, 'error');
+                    showNotification('Event broadcast failed', 'error');
+                }
+            } catch (error) {
+                logActivity(`Event broadcast error: ${error}`, 'error');
+                showNotification('Event broadcast error', 'error');
+            }
+        }
+
+        async function refreshEvents() {
+            try {
+                const response = await fetch(`${getBaseUrl()}/mp/events/recent?limit=10`);
+                const data = await response.json();
+                
+                const eventsList = document.getElementById('events-list');
+                if (data.events && data.events.length > 0) {
+                    eventsList.innerHTML = data.events.map(event => `
+                        <div class="log-entry">
+                            <strong>${event.eventType}</strong> from ${event.fromPlayer || 'Unknown'}<br>
+                            <small>${new Date(event.timestamp * 1000).toLocaleString()}</small><br>
+                            ${event.data.message || JSON.stringify(event.data)}
+                        </div>
+                    `).join('');
+                } else {
+                    eventsList.innerHTML = '<div class="log-entry">No recent events</div>';
+                }
+            } catch (error) {
+                logActivity(`Error refreshing events: ${error}`, 'error');
+            }
+        }
+
+        // Utility functions
+        function clearLog() {
+            document.getElementById('activity-log').innerHTML = '';
+            logActivity('Activity log cleared', 'success');
+        }
+
+        function messagePlayer(playerId) {
+            const message = prompt(`Send message to player ${playerId}:`);
+            if (message) {
+                // Implementation would go here
+                logActivity(`Message sent to ${playerId}: ${message}`, 'success');
+                showNotification('Message sent!', 'success');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            logActivity('X4 Enhanced Multiplayer Client loaded', 'success');
+            testConnection();
+            
+            // Auto-refresh data every 30 seconds
+            setInterval(() => {
+                if (authToken) {
+                    refreshPlayers();
+                    refreshEconomyData();
+                    refreshEvents();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
