@@ -156,6 +156,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ffi\FFIInvoke.cpp" />
     <ClCompile Include="httpserver\HttpServer.cpp" />
+    <ClCompile Include="multiplayer\MultiplayerServer.cpp" />
+    <ClCompile Include="multiplayer\MultiplayerClient.cpp" />
+    <ClCompile Include="multiplayer\MultiplayerConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Request_collection.har" />
@@ -171,6 +174,7 @@
     <ClInclude Include="endpoint_impl\object_and_component_funcs.h" />
     <ClInclude Include="endpoint_impl\logbook_funcs.h" />
     <ClInclude Include="endpoint_impl\message_funcs.h" />
+    <ClInclude Include="endpoint_impl\multiplayer_funcs.h" />
     <ClInclude Include="ffi\FFIInvoke.h" />
     <ClInclude Include="ffi\ffi_enum_helper.h" />
     <ClInclude Include="ffi\json_converters.h" />
@@ -180,6 +184,9 @@
     <ClInclude Include="lua_scripts\ComponentDataHelper.h" />
     <ClInclude Include="lua_scripts\dump_lua.h" />
     <ClInclude Include="lua_scripts\json.h" />
+    <ClInclude Include="multiplayer\MultiplayerServer.h" />
+    <ClInclude Include="multiplayer\MultiplayerClient.h" />
+    <ClInclude Include="multiplayer\MultiplayerConfig.h" />
     <ClInclude Include="_lua_.h" />
     <ClInclude Include="ffi\x4ffi\ffi_funcs.h" />
     <ClInclude Include="ffi\x4ffi\ffi_funcs_menu_map.h" />

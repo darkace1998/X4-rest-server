@@ -1,0 +1,25 @@
+{
+    "configVersion": "1.0.0",
+    "server": {
+        "enableDedicatedServer": false,
+        "serverPort": 3003,
+        "maxPlayers": 10,
+        "serverName": "X4 Multiplayer Coordination Server",
+        "enableChat": true,
+        "enableEconomySync": true,
+        "enablePlayerTracking": true,
+        "heartbeatTimeout": 300
+    },
+    "client": {
+        "enableMultiplayer": false,
+        "serverHost": "localhost",
+        "serverPort": 3003,
+        "playerName": "",
+        "autoConnect": false,
+        "heartbeatInterval": 30,
+        "syncInterval": 60,
+        "enableChat": true,
+        "enableEconomySync": true,
+        "enablePlayerTracking": true
+    }
+}
