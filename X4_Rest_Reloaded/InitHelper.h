@@ -13,6 +13,7 @@ https://opensource.org/licenses/MIT.
 #include "endpoint_impl/message_funcs.h"
 #include "endpoint_impl/object_and_component_funcs.h"
 #include "endpoint_impl/player_funcs.h"
+#include "endpoint_impl/multiplayer_funcs.h"
 
 class FFIInvoke;
 
@@ -25,6 +26,7 @@ public:
         RegisterLogbookFunctions(ffi_invoke);
         RegisterObjectAndComponentFunctions(ffi_invoke);
         RegisterMapOrQueryFunctions(ffi_invoke);
+        RegisterMultiplayerFunctions(ffi_invoke);
     }
 };
 
